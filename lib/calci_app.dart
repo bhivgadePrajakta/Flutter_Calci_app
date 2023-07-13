@@ -53,6 +53,7 @@ class _CalciState extends State<CalciApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       home: Scaffold(
         backgroundColor: const Color.fromARGB(255, 64, 50, 85),
         body: Column(
@@ -213,6 +214,7 @@ class _CalciState extends State<CalciApp> {
             style: TextStyle(
               fontSize: 24,
             ),
+            textAlign: TextAlign.center,
           ),
         ),
       ),
