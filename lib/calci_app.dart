@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:calci_app/colors.dart';
-import 'package:calci_app/equal_button.dart';
 import 'package:math_expressions/math_expressions.dart';
 
 class CalciApp extends StatefulWidget {
@@ -16,25 +15,37 @@ class _CalciState extends State<CalciApp> {
   var input = ' ';
   var output = ' ';
   var operation = ' ';
-
+  var hideInput = false;
+  var outputSize = 34.0;
   onButtonClick(value) {
     if (value == 'AC') {
-      var input = ' ';
-      var output = ' ';
+      input = ' ';
+      output = ' ';
     } else if (value == '<') {
-      input = input.substring(0, input.length - 1);
+      if (input.isNotEmpty) {
+        input = input.substring(0, input.length - 1);
+      }
     } else if (value == '=') {
-      var userInput = input;
-      userInput = input.replaceAll('x', '*');
-      print(userInput);
-      Parser p = Parser();
-      Expression expression = p.parse(userInput);
-      ContextModel cm = ContextModel();
-      var finalValue = expression.evaluate(EvaluationType.REAL, cm);
-      output = finalValue.toString();
-      print('expression');
+      if (input.isNotEmpty) {
+        var userInput = input;
+        userInput = input.replaceAll('x', '*');
+
+        Parser p = Parser();
+        Expression expression = p.parse(userInput);
+        ContextModel cm = ContextModel();
+        var finalValue = expression.evaluate(EvaluationType.REAL, cm);
+        output = finalValue.toString();
+        if (output.endsWith('.0')) {
+          output = output.substring(0, output.length - 2);
+        }
+        input = output;
+        hideInput = true;
+        outputSize = 52;
+      }
     } else {
       input = input + value;
+      hideInput = false;
+      outputSize = 34;
     }
     setState(() {});
   }
@@ -55,7 +66,7 @@ class _CalciState extends State<CalciApp> {
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     Text(
-                      input,
+                      hideInput ? '' : input,
                       style: const TextStyle(
                         fontSize: 48,
                         color: Colors.white,
@@ -66,9 +77,9 @@ class _CalciState extends State<CalciApp> {
                     ),
                     Text(
                       output,
-                      style: const TextStyle(
-                        fontSize: 34,
-                        color: Color.fromARGB(169, 255, 255, 255),
+                      style: TextStyle(
+                        fontSize: outputSize,
+                        color: const Color.fromARGB(169, 255, 255, 255),
                       ),
                     ),
                     const SizedBox(
@@ -90,7 +101,7 @@ class _CalciState extends State<CalciApp> {
                   tColor: const Color.fromARGB(255, 111, 109, 131),
                   buttonBgColor: const Color.fromARGB(255, 196, 195, 217),
                 ),
-                button(
+                transButton(
                   text: ' ',
                   buttonBgColor: const Color.fromARGB(255, 64, 50, 85),
                 ),
@@ -144,7 +155,9 @@ class _CalciState extends State<CalciApp> {
                 button(
                   text: '.',
                 ),
-                const EqualButton(),
+                acButton(
+                  text: '=',
+                )
               ],
             ),
           ],
@@ -171,6 +184,47 @@ class _CalciState extends State<CalciApp> {
                 fontSize: 24, color: tColor, fontWeight: FontWeight.bold),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget acButton({text}) {
+    return Expanded(
+      child: Container(
+        height: 65,
+        margin: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(colors: [
+            Color.fromARGB(255, 240, 96, 248),
+            Color.fromARGB(255, 129, 81, 224)
+          ]),
+          borderRadius: BorderRadius.circular(40),
+        ),
+        child: ElevatedButton(
+          onPressed: () => onButtonClick(text),
+          style: ElevatedButton.styleFrom(
+            //elevation: 0,
+            backgroundColor: Colors.transparent,
+            shadowColor: Colors.transparent,
+            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 40),
+          ),
+          child: const Text(
+            '=',
+            style: TextStyle(
+              fontSize: 24,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget transButton({text, buttonBgColor}) {
+    return Expanded(
+      child: Container(
+        height: 65,
+        margin: const EdgeInsets.all(8),
+        color: const Color.fromARGB(255, 64, 50, 85),
       ),
     );
   }
