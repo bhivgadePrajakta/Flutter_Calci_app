@@ -214,7 +214,6 @@ class _CalciState extends State<CalciApp> {
             style: TextStyle(
               fontSize: 24,
             ),
-            textAlign: TextAlign.center,
           ),
         ),
       ),
